@@ -78,87 +78,118 @@
             <button class="flex flex-col items-center gap-1 text-gray-500"><i class="fa-solid fa-star text-lg"></i><span class="text-[10px]">FAV</span></button>
         </nav>
     </section>
+<script>
+const sendBtn = document.getElementById('send-btn');
+const inputField = document.getElementById('vibe-input');
+const chatArea = document.getElementById('chat-area');
 
-   <script>
-        const sendBtn = document.getElementById('send-btn');
-        const inputField = document.getElementById('vibe-input');
-        const chatArea = document.getElementById('chat-area');
-        // APNA GOOGLE SCRIPT URL YAHAN DALO
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbz52LoCry8ROxFc4tj2mF53OVwYSCgsQzp3je8T-MTBnzV0pG_KhbP3H7vYOKGNfqa5rA/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbz52LoCry8ROxFc4tj2mF53OVwYSCgsQzp3je8T-MTBnzV0pG_KhbP3H7vYOKGNfqa5rA/exec";
 
-        function closePopup() { document.getElementById('welcome-popup').style.display = 'none'; }
+function closePopup(){
+ document.getElementById('welcome-popup').style.display='none';
+}
 
-        function appendMessage(role, text) {
-            const isAI = role === 'ai';
-            const msgHTML = `
-                <div class="flex gap-3 ${isAI ? 'items-start animate-in fade-in duration-500' : 'justify-end'} mb-4">
-                    ${isAI ? `<div class="w-9 h-9 rounded-xl bg-cyan-600 flex items-center justify-center"><i class="fa-solid fa-robot text-sm"></i></div>` : ''}
-                    <div class="${isAI ? 'glass' : 'bg-cyan-600/20 border-cyan-500/30 border'} p-4 rounded-2xl max-w-[85%] text-sm">${text}</div>
-                    ${!isAI ? `<div class="w-9 h-9 rounded-xl bg-gray-700 flex items-center justify-center ml-2"><i class="fa-solid fa-user text-sm"></i></div>` : ''}
-                </div>`;
-            chatArea.insertAdjacentHTML('beforeend', msgHTML);
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
+function appendMessage(role,text){
+ const isAI=role==="ai";
 
-        function generateMusicCard(vibe, audioUrl) {
-            const cardHTML = `
-                <div class="music-card p-4 rounded-2xl flex flex-col gap-3 border-cyan-400/50 border mb-4 animate-in slide-in-from-bottom duration-700">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-cyan-500/20 rounded-full flex items-center justify-center border border-cyan-500 shadow-[0_0_10px_rgba(0,242,255,0.3)]">
-                            <i class="fa-solid fa-compact-disc fa-spin text-cyan-400"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Suno AI Generated</h3>
-                            <p class="text-xs font-medium">${vibe} Mix</p>
-                        </div>
-                    </div>
-                    ${audioUrl ? `<audio controls autoplay class="w-full h-8 opacity-80 custom-audio"><source src="${audioUrl}" type="audio/mpeg"></audio>` : '<p class="text-[10px] text-gray-500">Audio synthesizing...</p>'}
-                </div>`;
-            chatArea.insertAdjacentHTML('beforeend', cardHTML);
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
+ const html=`
+ <div class="flex gap-3 ${isAI?'items-start':'justify-end'} mb-4">
+ ${isAI?'<div class="w-9 h-9 rounded-xl bg-cyan-600 flex items-center justify-center"><i class="fa-solid fa-robot text-sm"></i></div>':''}
+ <div class="${isAI?'glass':'bg-cyan-600/20 border border-cyan-500/30'} p-4 rounded-2xl max-w-[85%] text-sm">${text}</div>
+ </div>`;
 
-        function addSpotifyPlayer(trackUrl) {
-            if (!trackUrl) return;
-            const embedUrl = trackUrl.replace("open.spotify.com", "open.spotify.com/embed");
-            const playerHTML = `
-                <div class="mt-2 glass rounded-xl overflow-hidden border border-green-500/30 mb-4">
-                    <iframe src="${embedUrl}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-                    <div class="bg-green-500/10 p-1 text-[9px] text-center text-green-400 font-bold uppercase tracking-tighter">Matched on Spotify</div>
-                </div>`;
-            chatArea.insertAdjacentHTML('beforeend', playerHTML);
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
+ chatArea.insertAdjacentHTML('beforeend',html);
+ chatArea.scrollTop=chatArea.scrollHeight;
+}
 
-        sendBtn.addEventListener('click', async () => {
-            const vibe = inputField.value.trim();
-            if (vibe) {
-                appendMessage('user', vibe);
-                inputField.value = '';
-                appendMessage('ai', `Mood detected: **${vibe}**. Connecting to Suno AI & Spotify Loop...`);
-                
-                try {
-                    const response = await fetch(GAS_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        body: JSON.stringify({ mood: vibe })
-                    });
-                    
-                    // Note: 'no-cors' mein response data read nahi hota, par hum card dikha dete hain user ko
-                    // Asli data tabhi dikhega jab GAS Web App sahi se handle karega
-                    setTimeout(() => {
-                        generateMusicCard(vibe, null); 
-                        // Demo ke liye Spotify match ka message
-                        appendMessage('ai', "Searching Spotify for matching frequencies...");
-                    }, 1500);
+function generateMusicCard(vibe,audioUrl){
+ const html=`
+ <div class="music-card p-4 rounded-2xl mb-4">
+ <p class="text-cyan-400 font-bold">${vibe} Mix</p>
+ <audio controls autoplay class="w-full mt-2">
+ <source src="${audioUrl}" type="audio/mpeg">
+ </audio>
+ </div>
+ `;
+ chatArea.insertAdjacentHTML('beforeend',html);
+}
 
-                } catch (err) {
-                    appendMessage('ai', "Loop Connection Error. Checking backup systems...");
-                }
-            }
-        });
+function addSpotifyPlayer(trackUrl){
+ if(!trackUrl)return;
 
-        inputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendBtn.click(); });
-    </script>
+ const embed=trackUrl.replace(
+ "open.spotify.com",
+ "open.spotify.com/embed"
+ );
+
+ const html=`
+ <iframe
+ src="${embed}"
+ width="100%"
+ height="80"
+ frameborder="0"
+ allow="encrypted-media">
+ </iframe>
+ `;
+
+ chatArea.insertAdjacentHTML('beforeend',html);
+}
+
+async function sendVibe(){
+
+ const vibe=inputField.value.trim();
+
+ if(!vibe)return;
+
+ appendMessage('user',vibe);
+
+ inputField.value='';
+
+ appendMessage('ai','Analyzing vibe...');
+
+ try{
+
+ const response=await fetch(GAS_URL,{
+ method:'POST',
+ headers:{
+ 'Content-Type':'application/json'
+ },
+ body:JSON.stringify({
+ mood:vibe
+ })
+ });
+
+ const data=await response.json();
+
+ if(data.error){
+ appendMessage('ai',data.error);
+ return;
+ }
+
+ generateMusicCard(vibe,data.suno_url);
+
+ addSpotifyPlayer(data.spotify_url);
+
+ appendMessage('ai',data.lyrics);
+
+ }catch(err){
+
+ appendMessage(
+ 'ai',
+ 'Connection failed: '+err.message
+ );
+
+ }
+
+}
+
+sendBtn.addEventListener('click',sendVibe);
+
+inputField.addEventListener('keypress',e=>{
+ if(e.key==='Enter'){
+ sendVibe();
+ }
+});
+</script>
 </body>
 </html>
