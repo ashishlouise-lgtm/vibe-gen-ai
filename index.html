@@ -129,55 +129,93 @@ chatArea.scrollTop=chatArea.scrollHeight;
 }
 
 function addSpotifyPlayer(trackUrl){
- if(!trackUrl)return;
 
- const embed=trackUrl.replace(
- "open.spotify.com",
- "open.spotify.com/embed"
- );
+if(!trackUrl)return;
 
- const html=`
- <iframe
- src="${embed}"
- width="100%"
- height="80"
- frameborder="0"
- allow="encrypted-media">
- </iframe>
- `;
+const embed=trackUrl.replace(
+"open.spotify.com",
+"open.spotify.com/embed"
+);
 
- chatArea.insertAdjacentHTML('beforeend',html);
+const html=`
+<div class="music-card p-4 rounded-2xl mb-4">
+<iframe
+style="border-radius:16px"
+src="${embed}"
+width="100%"
+height="152"
+frameborder="0"
+allowfullscreen
+allow="autoplay; clipboard-write; encrypted-media; fullscreen">
+</iframe>
+</div>
+`;
+
+chatArea.insertAdjacentHTML('beforeend',html);
+chatArea.scrollTop=chatArea.scrollHeight;
 }
 
 async function sendVibe(){
 
- const vibe=inputField.value.trim();
+const vibe=inputField.value.trim();
 
- if(!vibe) return;
+if(!vibe)return;
 
- appendMessage('user',vibe);
- inputField.value='';
+appendMessage('user',vibe);
+inputField.value='';
 
- appendMessage('ai','Analyzing vibe...');
+appendMessage('ai','Analyzing vibe...');
 
- try{
+try{
 
-   const response = await fetch(GAS_URL,{
-      method:"POST",
-      headers:{
-        "Content-Type":"text/plain;charset=utf-8"
-      },
-      body:JSON.stringify({
-        mood:vibe
-      })
-   });
+const response=await fetch(GAS_URL,{
+method:"POST",
+headers:{
+"Content-Type":"text/plain;charset=utf-8"
+},
+body:JSON.stringify({
+mood:vibe
+})
+});
 
-   const data = await response.json();
+const raw=await response.text();
 
-   if(data.error){
-      appendMessage('ai',data.error);
-      return;
-   }
+console.log("RAW:",raw);
+
+const data=JSON.parse(raw);
+
+if(data.error){
+appendMessage('ai',"Backend Error: "+data.error);
+return;
+}
+
+chatArea.innerHTML=chatArea.innerHTML;
+
+if(data.suno_url){
+generateMusicCard(vibe,data.suno_url);
+}
+
+if(data.spotify_url){
+addSpotifyPlayer(data.spotify_url);
+chatArea.scrollTop=chatArea.scrollHeight;
+}
+
+appendMessage(
+'ai',
+data.lyrics||"Track Ready 🎵"
+);
+
+}catch(err){
+
+appendMessage(
+'ai',
+"Frontend Error: "+err.message
+);
+
+console.error(err);
+
+}
+}
 
    generateMusicCard(vibe,data.suno_url);
 
