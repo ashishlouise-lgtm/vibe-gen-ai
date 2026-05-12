@@ -47,7 +47,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold border border-white/10">3</div>
-                <p class="text-xs text-gray-300">30 second ka **Unique Music** enjoy karein!</p>
+                <p class="text-xs text-gray-300">Har baar ek **Asli Dhun** enjoy karein!</p>
             </div>
         </div>
 
@@ -106,8 +106,8 @@
                         <i class="fa-solid fa-compact-disc fa-spin text-cyan-400"></i>
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Synthesized</h3>
-                        <p class="text-xs font-medium">${vibe} Mix</p>
+                        <h3 class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Connected</h3>
+                        <p class="text-xs font-medium">${vibe} Mood</p>
                     </div>
                 </div>
                 <audio controls autoplay class="w-full h-8 opacity-80 custom-audio">
@@ -118,35 +118,29 @@
         chatArea.scrollTop = chatArea.scrollHeight;
     }
 
-    // --- ASLI LOGIC CONNECTED TO NETLIFY FUNCTIONS ---
     sendBtn.addEventListener('click', async () => {
         const vibe = inputField.value.trim();
         if (vibe) {
             appendMessage('user', vibe);
             inputField.value = '';
-            appendMessage('ai', `Mood locked. Requesting fresh audio from ElevenLabs...`);
+            appendMessage('ai', `Vibe pakad li hai. Asli studio music connect kar raha hoon...`);
             
             try {
-                // Ye line Netlify Function ko call karegi
-                
-const response = await fetch('/.netlify/functions/vibe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mood: vibe })
-});
+                const response = await fetch('/.netlify/functions/vibe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mood: vibe })
+                });
 
-// Response check karne ke liye logic:
-const data = await response.json();
-if (data.audio) {
-    generateMusicCard(vibe, data.audio);
-} else {
-    // Agar backend ne audio nahi bheja toh error dikhao
-    appendMessage('ai', `Backend Error: ${data.error || "Unknown Error"}`);
-}
+                const data = await response.json();
+                if (data.audio) {
+                    generateMusicCard(vibe, data.audio);
+                } else {
+                    appendMessage('ai', `Server busy hai, ek baar phir try karein!`);
+                }
                 
             } catch (err) {
-                appendMessage('ai', "Bhai, ElevenLabs ki limit khatam hai ya Key galat hai. Sample sun lo!");
-                // Fail hone par backup sample play hoga
+                appendMessage('ai', "Internet slow hai bhai, backup sample sun lo!");
                 generateMusicCard(vibe, "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
             }
         }
