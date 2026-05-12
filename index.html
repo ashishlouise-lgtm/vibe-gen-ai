@@ -139,56 +139,54 @@ async function sendVibe(){
 
  const vibe=inputField.value.trim();
 
- if(!vibe)return;
+ if(!vibe) return;
 
  appendMessage('user',vibe);
-
  inputField.value='';
 
  appendMessage('ai','Analyzing vibe...');
 
  try{
 
- const response=await fetch(GAS_URL,{
- method:'POST',
- headers:{
- 'Content-Type':'application/json'
- },
- body:JSON.stringify({
- mood:vibe
- })
- });
+   const response = await fetch(GAS_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+      body:JSON.stringify({
+        mood:vibe
+      })
+   });
 
- const data=await response.json();
+   const data = await response.json();
 
- if(data.error){
- appendMessage('ai',data.error);
- return;
- }
+   if(data.error){
+      appendMessage('ai',data.error);
+      return;
+   }
 
- generateMusicCard(vibe,data.suno_url);
+   generateMusicCard(vibe,data.suno_url);
 
- addSpotifyPlayer(data.spotify_url);
+   if(data.spotify_url){
+      addSpotifyPlayer(data.spotify_url);
+   }
 
- appendMessage('ai',data.lyrics);
+   appendMessage('ai',data.lyrics);
 
  }catch(err){
 
- appendMessage(
- 'ai',
- 'Connection failed: '+err.message
- );
+   appendMessage(
+     'ai',
+     'Connection failed: '+err.message
+   );
 
  }
-
 }
 
-sendBtn.addEventListener('click',sendVibe);
+sendBtn.onclick=sendVibe;
 
-inputField.addEventListener('keypress',e=>{
- if(e.key==='Enter'){
- sendVibe();
- }
+inputField.addEventListener("keypress",e=>{
+ if(e.key==="Enter") sendVibe();
 });
 </script>
 </body>
