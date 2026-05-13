@@ -63,8 +63,6 @@ allowfullscreen>
 <script>
 const mood=document.getElementById("mood");
 const play=document.getElementById("play");
-const player=document.getElementById("player");
-const frame=document.getElementById("frame");
 const text=document.getElementById("text");
 
 play.onclick=()=>{
@@ -74,15 +72,17 @@ alert("Mood likho");
 return;
 }
 
-frame.src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-"
-+encodeURIComponent(mood.value+" music");
+const query=encodeURIComponent(mood.value+" song");
 
-text.innerText="Playing: "+mood.value;
+window.open(
+"https://www.youtube.com/results?search_query="+query,
+"_blank"
+);
 
-player.classList.remove("hidden");
+text.innerText="Opened: "+mood.value;
 
 };
+</script>
 </script>
 
 </body>
