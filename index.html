@@ -1,258 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VibeGen AI</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VibeGen Ultra</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
-        body { background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f0f1a 100%); color: #e0e0e0; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .music-card { background: linear-gradient(90deg, rgba(0, 242, 255, 0.1), rgba(0, 98, 255, 0.1)); border: 1px solid rgba(0, 242, 255, 0.2); }
-        @keyframes progress { 0% { width: 0%; } 100% { width: 100%; } }
-        .animate-progress { animation: progress 3s linear forwards; }
-        .custom-audio::-webkit-media-controls-panel { background: rgba(0, 242, 255, 0.1); }
+        body{background:radial-gradient(circle at top,#111827,#020617); min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x:hidden}
+        .glass{background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
+        .glow{box-shadow:0 0 35px rgba(34,211,238,.35)}
+        .float{animation:float 4s ease-in-out infinite}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+        iframe { border-radius: 1.5rem; border: 1px solid rgba(34,211,238,0.2); }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
-
-    <header class="p-4 glass flex justify-between items-center z-30">
-        <h1 class="text-xl font-black tracking-tighter italic text-cyan-400">VIBE-GEN</h1>
-        <div class="flex gap-4">
-            <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-cyan-500/20 transition"><i class="fa-solid fa-gear text-sm"></i></button>
-            <button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"><i class="fa-solid fa-user-astronaut text-sm text-cyan-400"></i></button>
+<body class="text-white">
+    <div class="glass glow rounded-[2.5rem] w-[92%] max-w-md p-10 text-center float">
+        <div class="w-24 h-24 mx-auto rounded-full bg-cyan-500/20 flex items-center justify-center mb-6 glow">
+            <i class="fa-solid fa-wave-square text-4xl text-cyan-300"></i>
         </div>
-    </header>
-
-    <div id="welcome-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
-    <div class="glass max-w-md w-full p-8 border-cyan-500/50 shadow-[0_0_50px_rgba(0,242,255,0.2)] text-center relative overflow-hidden">
-        <div class="absolute -top-10 -left-10 w-32 h-32 bg-cyan-600/20 blur-3xl rounded-full"></div>
+        <h1 class="text-4xl font-black tracking-tighter text-cyan-300">VIBEGEN AI</h1>
+        <p class="text-slate-400 mt-3 text-sm italic" id="lyrics-display">"Feel your mood. Generate your sound."</p>
         
-        <div class="w-20 h-20 bg-cyan-600/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-cyan-500/50">
-            <i class="fa-solid fa-wand-magic-sparkles text-3xl text-cyan-400"></i>
-        </div>
-
-        <h2 class="text-2xl font-black italic tracking-tight text-white mb-2">WELCOME TO <span class="text-cyan-400">VIBE-GEN</span></h2>
-        <p class="text-gray-400 text-sm mb-8">Duniya ka pehla AI music engine jo aapke mausam aur mood ko sunta hai.</p>
-
-        <div class="space-y-4 text-left mb-8">
-            <div class="flex items-center gap-4">
-                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold border border-white/10">1</div>
-                <p class="text-xs text-gray-300">Apna **Mood** aur **Mausam** type karein.</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold border border-white/10">2</div>
-                <p class="text-xs text-gray-300">AI aapki vibe ko analyze karega.</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold border border-white/10">3</div>
-                <p class="text-xs text-gray-300">30 second ka **Unique Music** enjoy karein!</p>
-            </div>
-        </div>
-
-        <button id="start-btn" class="w-full bg-cyan-600 text-white py-4 rounded-xl">
-    CHALO SHURU KAREIN 🚀
+        <input id="vibe-input" placeholder="Sad rain / Romantic night..." 
+               class="w-full mt-8 p-5 rounded-2xl bg-white/5 border border-cyan-500/20 outline-none focus:border-cyan-400 transition-all text-center" />
+        
+        <button id="send-btn" class="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 text-black font-black py-5 rounded-2xl glow transition-all active:scale-95 uppercase tracking-widest">
+            Generate Vibe
         </button>
-    </div>
-</div>
-
-    <main id="chat-area" class="flex-1 overflow-y-auto p-4 space-y-6 pb-40">
-        <div class="flex gap-3 items-start">
-            <div class="w-9 h-9 rounded-xl bg-cyan-600 flex items-center justify-center"><i class="fa-solid fa-robot text-sm"></i></div>
-            <div class="glass p-4 rounded-2xl rounded-tl-none max-w-[85%] text-sm">System Online. <br>Batao, aaj ki <span class="text-cyan-400 font-bold">dhun</span> kaisi honi chahiye?</div>
-        </div>
-    </main>
-
-    <section class="fixed bottom-0 left-0 right-0 z-20 bg-[#0f0f1a]/80 backdrop-blur-md">
-        <div class="px-4 pb-4 pt-2">
-            <div class="relative flex items-center glass rounded-full p-1 border-white/20">
-                <input id="vibe-input" type="text" placeholder="Mood, Mausam, Vibe..." class="w-full bg-transparent py-3 px-6 focus:outline-none text-sm">
-                <button id="send-btn" class="bg-cyan-600 w-10 h-10 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,242,255,0.4)]"><i class="fa-solid fa-paper-plane text-xs text-white"></i></button>
+        
+        <div class="mt-8 glass rounded-3xl p-2 hidden" id="player-card">
+            <div id="music-container">
+                <!-- YouTube Iframe injected here -->
             </div>
+            <p class="py-3 text-[10px] text-cyan-500/50 uppercase tracking-widest font-bold">AI Synced Player Active</p>
         </div>
-        <nav class="glass border-t border-white/10 flex justify-around p-3 pb-6">
-            <button class="flex flex-col items-center gap-1 text-cyan-400"><i class="fa-solid fa-house-chimney text-lg"></i><span class="text-[10px]">HOME</span></button>
-            <button class="flex flex-col items-center gap-1 text-gray-500"><i class="fa-solid fa-clock-rotate-left text-lg"></i><span class="text-[10px]">HISTORY</span></button>
-            <button class="flex flex-col items-center gap-1 text-gray-500"><i class="fa-solid fa-layer-group text-lg"></i><span class="text-[10px]">PRESETS</span></button>
-            <button class="flex flex-col items-center gap-1 text-gray-500"><i class="fa-solid fa-star text-lg"></i><span class="text-[10px]">FAV</span></button>
-        </nav>
-    </section>
-<script>
-const sendBtn = document.getElementById('send-btn');
-const inputField = document.getElementById('vibe-input');
-const chatArea = document.getElementById('chat-area');
-const GAS_URL="https://script.google.com/macros/s/AKfycbyk8RtojcOPgwRhYHsjEPNVZHKX-_pKqrRzwI3fFHnSF-2AyCKUpMcZrmi4mQ2EwZ2deg/exec";
 
-function closePopup(){
- document.getElementById('welcome-popup').style.display='none';
-}
-window.onload=function(){
+        <div id="status-text" class="mt-4 text-[10px] text-slate-500 uppercase tracking-[0.2em]">Ready to Sync</div>
+    </div>
 
-document
-.getElementById("start-btn")
-.onclick=function(){
+    <script>
+        // 🚨 GAS URL ekdum sahi wala daalna
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyk8RtojcOPgwRhYHsjEPNVZHKX-_pKqrRzwI3fFHnSF-2AyCKUpMcZrmi4mQ2EwZ2deg/exec";
 
-document
-.getElementById("welcome-popup")
-style.display="none";
+        async function sendVibe() {
+            const input = document.getElementById("vibe-input");
+            const btn = document.getElementById("send-btn");
+            const status = document.getElementById("status-text");
+            const playerCard = document.getElementById("player-card");
+            const musicBox = document.getElementById("music-container");
+            const lyricsDisplay = document.getElementById("lyrics-display");
 
-};
+            if (!input.value.trim()) {
+                alert("Bhai vibe toh likho!");
+                return;
+            }
 
-};
-    
+            // UI Loading State
+            btn.innerText = "Syncing Vibe...";
+            btn.disabled = true;
+            status.innerText = "AI is analyzing your mood...";
+            playerCard.classList.add("hidden");
 
-function appendMessage(role,text){
- const isAI=role==="ai";
+            try {
+                // Real Fetch Request to Google Script
+                const response = await fetch(GAS_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ mood: input.value })
+                });
 
- const html=`
- <div class="flex gap-3 ${isAI?'items-start':'justify-end'} mb-4">
- ${isAI?'<div class="w-9 h-9 rounded-xl bg-cyan-600 flex items-center justify-center"><i class="fa-solid fa-robot text-sm"></i></div>':''}
- <div class="${isAI?'glass':'bg-cyan-600/20 border border-cyan-500/30'} p-4 rounded-2xl max-w-[85%] text-sm">${text}</div>
- </div>`;
+                const data = await response.json();
 
- chatArea.insertAdjacentHTML('beforeend',html);
- chatArea.scrollTop=chatArea.scrollHeight;
-}
+                if (data.youtube_url) {
+                    // AI se aaye lyrics dikhao
+                    lyricsDisplay.innerText = `"${data.lyrics}"`;
 
-function generateMusicCard(vibe,audioUrl){
+                    // YouTube Player Inject karo
+                    musicBox.innerHTML = `
+                        <iframe width="100%" height="180" 
+                            src="${data.youtube_url}" 
+                            frameborder="0" 
+                            allow="autoplay; encrypted-media; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>`;
 
-if(!audioUrl){
-appendMessage('ai',"No track found");
-return;
-}
+                    playerCard.classList.remove("hidden");
+                    status.innerText = "Vibe Matched 🎵";
+                } else if (data.error) {
+                    throw new Error(data.error);
+                }
 
-const html=`
-<div class="music-card p-4 rounded-2xl mb-4">
-<p class="text-cyan-400 font-bold">${vibe} Mix</p>
+            } catch (error) {
+                console.error(error);
+                status.innerText = "Connection Failed!";
+                alert("Error: " + error.message);
+            } finally {
+                btn.innerText = "Generate Vibe";
+                btn.disabled = false;
+            }
+        }
 
-<iframe
-src="${audioUrl}"
-width="100%"
-height="152"
-frameborder="0"
-allow="encrypted-media">
-</iframe>
-
-</div>
-`;
-
-chatArea.insertAdjacentHTML('beforeend',html);
-chatArea.scrollTop=chatArea.scrollHeight;
-}
-
-function addSpotifyPlayer(trackUrl){
-
-if(!trackUrl)return;
-
-const embed=trackUrl.replace(
-"open.spotify.com",
-"open.spotify.com/embed"
-);
-
-const html=`
-<div class="music-card p-4 rounded-2xl mb-4">
-<iframe
-style="border-radius:16px"
-src="${embed}"
-width="100%"
-height="152"
-frameborder="0"
-allowfullscreen
-allow="autoplay; clipboard-write; encrypted-media; fullscreen">
-</iframe>
-</div>
-`;
-
-chatArea.insertAdjacentHTML('beforeend',html);
-chatArea.scrollTop=chatArea.scrollHeight;
-}
-
-async function sendVibe(){
-
-const vibe=inputField.value.trim();
-
-if(!vibe)return;
-
-appendMessage('user',vibe);
-inputField.value='';
-
-appendMessage('ai','Analyzing vibe...');
-
-try{
-
-const response=await fetch(GAS_URL,{
-method:"POST",
-headers:{
-"Content-Type":"text/plain;charset=utf-8"
-},
-body:JSON.stringify({
-mood:vibe
-})
-});
-
-const raw=await response.text();
-
-console.log("RAW:",raw);
-
-const data=JSON.parse(raw);
-
-if(data.error){
-appendMessage('ai',"Backend Error: "+data.error);
-return;
-}
-
-chatArea.innerHTML=chatArea.innerHTML;
-
-if(data.suno_url){
-generateMusicCard(vibe,data.suno_url);
-}
-
-if(data.spotify_url){
-addSpotifyPlayer(data.spotify_url);
-chatArea.scrollTop=chatArea.scrollHeight;
-}
-
-appendMessage(
-'ai',
-data.lyrics||"Track Ready 🎵"
-);
-
-}catch(err){
-
-appendMessage(
-'ai',
-"Frontend Error: "+err.message
-);
-
-console.error(err);
-
-}
-}
-
-   generateMusicCard(vibe,data.suno_url);
-
-   if(data.spotify_url){
-      addSpotifyPlayer(data.spotify_url);
-   }
-
-   appendMessage('ai',data.lyrics);
-
- }catch(err){
-
-   appendMessage(
-     'ai',
-     'Connection failed: '+err.message
-   );
-
- }
-}
-
-sendBtn.onclick=sendVibe;
-
-inputField.addEventListener("keypress",e=>{
- if(e.key==="Enter") sendVibe();
-});
-</script>
+        document.getElementById("send-btn").addEventListener("click", sendVibe);
+    </script>
 </body>
 </html>
