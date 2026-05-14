@@ -125,4 +125,26 @@
         document.getElementById('vibe-btn').onclick = processVibe;
     </script>
 </body>
+</html>            const input = document.getElementById('vibe-input');
+            const mood = input.value.trim();
+            if(!mood) return;
+
+            const userRef = doc(db, "users", userUID);
+            const snap = await getDoc(userRef);
+            let coins = snap.data().coins;
+
+            if(coins <= 0) return alert("Coins khatam! Admin ko WhatsApp karein.");
+
+            document.getElementById('current-mood').innerText = "VIBING...";
+            
+            // Coin kaat lo (1 Search = 1 Coin)
+            await updateDoc(userRef, { coins: coins - 1 });
+            
+            // Redirect to Spotify
+            window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
+        }
+
+        document.getElementById('vibe-btn').onclick = processVibe;
+    </script>
+</body>
 </html>
