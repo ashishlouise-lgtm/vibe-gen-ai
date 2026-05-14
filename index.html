@@ -12,8 +12,9 @@
                         radial-gradient(circle at bottom right, #191414 0%, #121212 100%);
             color: white;
             font-family: 'Circular', 'Inter', sans-serif;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh; /* Fix: Sirf 100vh nahi, min-height use kiya */
+            display: flex;
+            flex-direction: column;
         }
         .spotify-card {
             background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 100%);
@@ -39,7 +40,6 @@
         @keyframes bounce { from { height: 5px; } to { height: 25px; } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* Shimmer effect for AI processing */
         .shimmer {
             background: linear-gradient(90deg, #1db95422, #1db954, #1db95422);
             background-size: 200% 100%;
@@ -48,68 +48,75 @@
             -webkit-text-fill-color: transparent;
         }
         @keyframes shimmer { to { background-position: -200% 0; } }
+
+        /* Fixed Bottom Nav adjustment */
+        nav {
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            z-index: 50;
+        }
     </style>
 </head>
-<body class="flex flex-col">
+<body>
 
     <!-- Header -->
-    <header class="p-6 flex justify-between items-center">
+    <header class="p-5 flex justify-between items-center w-full max-w-md mx-auto">
         <div class="flex items-center gap-2">
             <i class="fa-brands fa-spotify text-3xl text-[#1DB954]"></i>
-            <h1 class="text-xl font-bold tracking-tight">VibeGen <span class="font-light opacity-60">AI Pro</span></h1>
+            <h1 class="text-lg font-bold tracking-tight">VibeGen <span class="font-light opacity-60">AI Pro</span></h1>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
             <div class="bg-black/40 px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
-                <i class="fa-solid fa-coins text-yellow-500 text-xs"></i>
+                <i class="fa-solid fa-coins text-yellow-500 text-[10px]"></i>
                 <span id="coin-count" class="text-xs font-bold">--</span>
-                <button onclick="alert('Contact Admin to Refill Coins!')" class="ml-1 text-[#1DB954] font-bold">+</button>
+                <button onclick="alert('Contact Admin!')" class="ml-1 text-[#1DB954] font-bold">+</button>
             </div>
-            <img src="https://ui-avatars.com/api/?name=User&background=1DB954&color=fff" class="w-8 h-8 rounded-full border-2 border-white/20">
+            <img src="https://ui-avatars.com/api/?name=User&background=1DB954&color=fff" class="w-7 h-7 rounded-full border border-white/20">
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 px-6 flex flex-col justify-center gap-10 max-w-md mx-auto w-full text-center">
+    <main class="flex-1 px-6 py-4 flex flex-col items-center justify-start gap-8 max-w-md mx-auto w-full">
         
         <!-- AI Visualizer Area -->
-        <div class="spotify-card w-full aspect-square rounded-3xl shadow-2xl overflow-hidden relative flex flex-col items-center justify-center gap-4">
-            <div class="flex items-end gap-1.5 h-24" id="visualizer">
+        <div class="spotify-card w-full aspect-square max-h-[320px] rounded-3xl shadow-2xl overflow-hidden relative flex flex-col items-center justify-center gap-4">
+            <div class="flex items-end gap-1.5 h-16" id="visualizer">
                 <div class="bar" style="animation-delay: 0.1s"></div>
                 <div class="bar" style="animation-delay: 0.3s"></div>
                 <div class="bar" style="animation-delay: 0.5s"></div>
                 <div class="bar" style="animation-delay: 0.2s"></div>
                 <div class="bar" style="animation-delay: 0.4s"></div>
-                <div class="bar" style="animation-delay: 0.6s"></div>
             </div>
-            <div class="px-6">
-                <p id="ai-status-label" class="text-[10px] uppercase tracking-[0.2em] opacity-40 font-black mb-1">System Idle</p>
-                <h2 id="current-mood" class="text-xl font-bold italic tracking-tight">What's the vibe today?</h2>
+            <div class="px-6 text-center">
+                <p id="ai-status-label" class="text-[9px] uppercase tracking-[0.2em] opacity-40 font-black mb-1">System Idle</p>
+                <h2 id="current-mood" class="text-lg font-bold italic tracking-tight">Ready to Match</h2>
             </div>
         </div>
 
         <!-- Input Area -->
-        <div class="space-y-6">
-            <div class="relative group">
+        <div class="w-full space-y-6">
+            <div class="relative">
                 <input id="vibe-input" type="text" 
-                    placeholder="E.g. Rain, long drive, lo-fi beats..." 
-                    class="glass-input w-full py-5 px-8 rounded-full outline-none text-sm transition-all text-white placeholder:opacity-30">
-                <button id="vibe-btn" class="absolute right-2 top-2 w-12 h-12 btn-spotify rounded-full flex items-center justify-center shadow-lg">
+                    placeholder="E.g. Sad song for rain..." 
+                    class="glass-input w-full py-4 pl-6 pr-14 rounded-full outline-none text-sm text-white">
+                <button id="vibe-btn" class="absolute right-1.5 top-1.5 w-11 h-11 btn-spotify rounded-full flex items-center justify-center shadow-lg">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </button>
             </div>
 
             <!-- Quick Mood Pills -->
             <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                <button onclick="quickAction('🔥 High Energy Gym')" class="pill whitespace-nowrap px-5 py-2.5 rounded-full border border-white/10 text-xs bg-white/5 hover:bg-[#1DB95422] transition-colors">🔥 Gym</button>
-                <button onclick="quickAction('🌙 Late Night Drive')" class="pill whitespace-nowrap px-5 py-2.5 rounded-full border border-white/10 text-xs bg-white/5 hover:bg-[#1DB95422] transition-colors">🌙 Night</button>
-                <button onclick="quickAction('☕ Aesthetic Coffee Chill')" class="pill whitespace-nowrap px-5 py-2.5 rounded-full border border-white/10 text-xs bg-white/5 hover:bg-[#1DB95422] transition-colors">☕ Chill</button>
-                <button onclick="quickAction('💔 Emotional Heartbreak')" class="pill whitespace-nowrap px-5 py-2.5 rounded-full border border-white/10 text-xs bg-white/5 hover:bg-[#1DB95422] transition-colors">💔 Sad</button>
+                <button onclick="quickAction('🔥 Gym')" class="pill whitespace-nowrap px-5 py-2 rounded-full border border-white/10 text-xs bg-white/5">🔥 Gym</button>
+                <button onclick="quickAction('🌙 Night')" class="pill whitespace-nowrap px-5 py-2 rounded-full border border-white/10 text-xs bg-white/5">🌙 Night</button>
+                <button onclick="quickAction('☕ Chill')" class="pill whitespace-nowrap px-5 py-2 rounded-full border border-white/10 text-xs bg-white/5">☕ Chill</button>
+                <button onclick="quickAction('💔 Sad')" class="pill whitespace-nowrap px-5 py-2 rounded-full border border-white/10 text-xs bg-white/5">💔 Sad</button>
             </div>
         </div>
     </main>
 
-    <!-- Bottom Nav -->
-    <nav class="bg-black/90 backdrop-blur-xl border-t border-white/5 p-5 flex justify-around items-center">
+    <!-- Bottom Nav (Sticky) -->
+    <nav class="bg-black/90 backdrop-blur-xl border-t border-white/5 p-4 mt-auto flex justify-around items-center">
         <div class="flex flex-col items-center gap-1 text-[#1DB954]">
             <i class="fa-solid fa-house-chimney text-lg"></i>
             <span class="text-[9px] font-bold uppercase tracking-wider">Home</span>
@@ -144,7 +151,6 @@
     let userUID = localStorage.getItem('vibe_uid') || "user_" + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('vibe_uid', userUID);
 
-    // Sync Coins
     onSnapshot(doc(db, "users", userUID), (snapshot) => {
         if (snapshot.exists()) {
             document.getElementById('coin-count').innerText = snapshot.data().coins;
@@ -172,49 +178,31 @@
         const snap = await getDoc(userRef);
         let coins = snap.data().coins;
 
-        if(coins <= 0) return alert("Insufficient Coins! Contact admin for refill.");
+        if(coins <= 0) return alert("Low Coins!");
 
-        // AI "Processing" UI
         btn.disabled = true;
-        btn.style.opacity = "0.3";
-        statusLabel.innerText = "Neural Engine Active";
+        statusLabel.innerText = "Processing...";
         statusLabel.classList.add('shimmer');
-        statusText.innerText = "Analyzing Vibe Patterns...";
+        statusText.innerText = "Analyzing Vibe...";
         bars.forEach(b => b.style.animationDuration = '0.2s');
 
         try {
-            // 1. Coin Deduct
             await updateDoc(userRef, { coins: coins - 1 });
+            fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ mood, user: userUID }) });
 
-            // 2. Log to Google Sheet (AI Context)
-            fetch(GAS_URL, { 
-                method: 'POST', 
-                mode: 'no-cors', 
-                body: JSON.stringify({ mood, user: userUID, type: 'AI_PREMIUM_VIBE' }) 
-            });
-
-            // 3. Smart Redirect after small delay for "AI Feel"
             setTimeout(() => {
-                statusText.innerText = "Matching Music DNA...";
-                setTimeout(() => {
-                    window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
-                    
-                    // Reset UI
-                    statusLabel.innerText = "Vibe Synchronized";
-                    statusLabel.classList.remove('shimmer');
-                    statusText.innerText = "Enjoy your match!";
-                    bars.forEach(b => b.style.animationDuration = '1s');
-                    btn.disabled = false;
-                    btn.style.opacity = "1";
-                    input.value = "";
-                }, 800);
-            }, 800);
+                window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
+                statusLabel.classList.remove('shimmer');
+                statusLabel.innerText = "Vibe Matched";
+                statusText.innerText = "Enjoy!";
+                bars.forEach(b => b.style.animationDuration = '1s');
+                btn.disabled = false;
+            }, 1000);
 
         } catch(e) {
             window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
         }
     }
-
     document.getElementById('vibe-btn').onclick = processVibe;
 </script>
 </body>
