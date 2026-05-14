@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VibeGen Pro | Premium</title>
+    <title>VibeGen AI Pro | Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -38,6 +38,16 @@
         .bar { width: 4px; height: 20px; background: #1DB954; border-radius: 2px; animation: bounce 1s infinite alternate; }
         @keyframes bounce { from { height: 5px; } to { height: 25px; } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Shimmer effect for AI processing */
+        .shimmer {
+            background: linear-gradient(90deg, #1db95422, #1db954, #1db95422);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes shimmer { to { background-position: -200% 0; } }
     </style>
 </head>
 <body class="flex flex-col">
@@ -46,13 +56,12 @@
     <header class="p-6 flex justify-between items-center">
         <div class="flex items-center gap-2">
             <i class="fa-brands fa-spotify text-3xl text-[#1DB954]"></i>
-            <h1 class="text-xl font-bold tracking-tight">VibeGen <span class="font-light opacity-60">Pro</span></h1>
+            <h1 class="text-xl font-bold tracking-tight">VibeGen <span class="font-light opacity-60">AI Pro</span></h1>
         </div>
         <div class="flex items-center gap-3">
             <div class="bg-black/40 px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
                 <i class="fa-solid fa-coins text-yellow-500 text-xs"></i>
                 <span id="coin-count" class="text-xs font-bold">--</span>
-                <!-- Admin Control Notice -->
                 <button onclick="alert('Contact Admin to Refill Coins!')" class="ml-1 text-[#1DB954] font-bold">+</button>
             </div>
             <img src="https://ui-avatars.com/api/?name=User&background=1DB954&color=fff" class="w-8 h-8 rounded-full border-2 border-white/20">
@@ -60,56 +69,62 @@
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 px-6 flex flex-col justify-center gap-10 max-w-md mx-auto w-full">
+    <main class="flex-1 px-6 flex flex-col justify-center gap-10 max-w-md mx-auto w-full text-center">
         
-        <!-- Album Art / Visualizer Area -->
-        <div class="spotify-card w-full aspect-square rounded-2xl shadow-2xl overflow-hidden relative flex items-center justify-center">
-            <div class="flex items-end gap-1 h-20">
+        <!-- AI Visualizer Area -->
+        <div class="spotify-card w-full aspect-square rounded-3xl shadow-2xl overflow-hidden relative flex flex-col items-center justify-center gap-4">
+            <div class="flex items-end gap-1.5 h-24" id="visualizer">
                 <div class="bar" style="animation-delay: 0.1s"></div>
                 <div class="bar" style="animation-delay: 0.3s"></div>
+                <div class="bar" style="animation-delay: 0.5s"></div>
                 <div class="bar" style="animation-delay: 0.2s"></div>
                 <div class="bar" style="animation-delay: 0.4s"></div>
-                <div class="bar" style="animation-delay: 0.5s"></div>
+                <div class="bar" style="animation-delay: 0.6s"></div>
             </div>
-            <div class="absolute bottom-4 left-4">
-                <p class="text-[10px] uppercase tracking-widest opacity-50 font-bold">Now Analyzing</p>
-                <h2 id="current-mood" class="text-lg font-bold italic">Your Mood Vibe</h2>
+            <div class="px-6">
+                <p id="ai-status-label" class="text-[10px] uppercase tracking-[0.2em] opacity-40 font-black mb-1">System Idle</p>
+                <h2 id="current-mood" class="text-xl font-bold italic tracking-tight">What's the vibe today?</h2>
             </div>
         </div>
 
         <!-- Input Area -->
         <div class="space-y-6">
             <div class="relative group">
-                <input id="vibe-input" type="text" placeholder="What do you want to feel?" 
-                    class="glass-input w-full py-4 px-6 rounded-full outline-none text-sm transition-all text-white">
-                <button id="vibe-btn" class="absolute right-2 top-2 w-10 h-10 btn-spotify rounded-full flex items-center justify-center">
-                    <i class="fa-solid fa-play"></i>
+                <input id="vibe-input" type="text" 
+                    placeholder="E.g. Rain, long drive, lo-fi beats..." 
+                    class="glass-input w-full py-5 px-8 rounded-full outline-none text-sm transition-all text-white placeholder:opacity-30">
+                <button id="vibe-btn" class="absolute right-2 top-2 w-12 h-12 btn-spotify rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </button>
             </div>
 
             <!-- Quick Mood Pills -->
             <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                <button class="pill whitespace-nowrap px-4 py-2 rounded-full border border-white/10 text-xs bg-white/5">🔥 Gym</button>
-                <button class="pill whitespace-nowrap px-4 py-2 rounded-full border border-white/10 text-xs bg-white/5">🌙 Night</button>
-                <button class="pill whitespace-nowrap px-4 py-2 rounded-full border border-white/10 text-xs bg-white/5">☕ Chill</button>
-                <button class="pill whitespace-nowrap px-4 py-2 rounded-full border border-white/10 text-xs bg-white/5">💔 Sad</button>
+                <button onclick="quickAction('🔥 High Energy Gym')" class="pill whitespace-nowrap px-5 py-2.5 rounded-full border border-white/10 text-xs bg-white/5 hover:bg-[#1DB95422] transition-colors">🔥 Gym</button>
+                <button onclick="quickAction('🌙 Late Night Drive')" class="pill whitespace-nowrap px-5 py-2.5 rounded-full border border-white/10 text-xs bg-white/5 hover:bg-[#1DB95422] transition-colors">🌙 Night</button>
+                <button onclick="quickAction('☕ Aesthetic Coffee Chill')" class="pill whitespace-nowrap px-5 py-2.5 rounded-full border border-white/10 text-xs bg-white/5 hover:bg-[#1DB95422] transition-colors">☕ Chill</button>
+                <button onclick="quickAction('💔 Emotional Heartbreak')" class="pill whitespace-nowrap px-5 py-2.5 rounded-full border border-white/10 text-xs bg-white/5 hover:bg-[#1DB95422] transition-colors">💔 Sad</button>
             </div>
         </div>
     </main>
 
     <!-- Bottom Nav -->
-    <nav class="bg-black/80 backdrop-blur-md border-t border-white/5 p-4 flex justify-around items-center">
-        <div class="flex flex-col items-center gap-1 text-[#1DB954] cursor-pointer">
-            <i class="fa-solid fa-house"></i>
-            <span class="text-[10px]">Home</span>
+    <nav class="bg-black/90 backdrop-blur-xl border-t border-white/5 p-5 flex justify-around items-center">
+        <div class="flex flex-col items-center gap-1 text-[#1DB954]">
+            <i class="fa-solid fa-house-chimney text-lg"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Home</span>
         </div>
-        <div class="flex flex-col items-center gap-1 opacity-50 cursor-pointer" onclick="alert('Admin Panel Coming Soon')">
-            <i class="fa-solid fa-gear"></i>
-            <span class="text-[10px]">Manage</span>
+        <div class="flex flex-col items-center gap-1 opacity-30">
+            <i class="fa-solid fa-bolt-lightning text-lg"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Discover</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 opacity-30" onclick="alert('Admin Panel Coming Soon')">
+            <i class="fa-solid fa-sliders text-lg"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Settings</span>
         </div>
     </nav>
 
-   <script type="module">
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, onSnapshot, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -138,11 +153,18 @@
         }
     });
 
+    window.quickAction = function(text) {
+        document.getElementById('vibe-input').value = text;
+        window.processVibe();
+    }
+
     window.processVibe = async function() {
         const input = document.getElementById('vibe-input');
         const mood = input.value.trim();
-        const status = document.getElementById('current-mood');
+        const statusText = document.getElementById('current-mood');
+        const statusLabel = document.getElementById('ai-status-label');
         const btn = document.getElementById('vibe-btn');
+        const bars = document.querySelectorAll('.bar');
 
         if(!mood) return;
 
@@ -150,35 +172,45 @@
         const snap = await getDoc(userRef);
         let coins = snap.data().coins;
 
-        if(coins <= 0) return alert("No coins left! Contact Admin.");
+        if(coins <= 0) return alert("Insufficient Coins! Contact admin for refill.");
 
-        // UI Changes
-        status.innerText = "TUNING VIBE...";
+        // AI "Processing" UI
         btn.disabled = true;
-        btn.style.opacity = "0.5";
+        btn.style.opacity = "0.3";
+        statusLabel.innerText = "Neural Engine Active";
+        statusLabel.classList.add('shimmer');
+        statusText.innerText = "Analyzing Vibe Patterns...";
+        bars.forEach(b => b.style.animationDuration = '0.2s');
 
         try {
-            // 1. Coin Kaato Pehle (Database Update)
+            // 1. Coin Deduct
             await updateDoc(userRef, { coins: coins - 1 });
 
-            // 2. Google Script ko data bhejo (Background mein, wait nahi karenge)
+            // 2. Log to Google Sheet (AI Context)
             fetch(GAS_URL, { 
                 method: 'POST', 
-                mode: 'no-cors', // Ye error prevent karega
-                body: JSON.stringify({ mood, user: userUID }) 
+                mode: 'no-cors', 
+                body: JSON.stringify({ mood, user: userUID, type: 'AI_PREMIUM_VIBE' }) 
             });
 
-            // 3. Instant Redirect (Ab wait nahi hoga)
+            // 3. Smart Redirect after small delay for "AI Feel"
             setTimeout(() => {
-                window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
-                // Reset UI after redirect
-                status.innerText = "READY TO SYNC?";
-                btn.disabled = false;
-                btn.style.opacity = "1";
+                statusText.innerText = "Matching Music DNA...";
+                setTimeout(() => {
+                    window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
+                    
+                    // Reset UI
+                    statusLabel.innerText = "Vibe Synchronized";
+                    statusLabel.classList.remove('shimmer');
+                    statusText.innerText = "Enjoy your match!";
+                    bars.forEach(b => b.style.animationDuration = '1s');
+                    btn.disabled = false;
+                    btn.style.opacity = "1";
+                    input.value = "";
+                }, 800);
             }, 800);
 
         } catch(e) {
-            console.log("Error but continuing...");
             window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
         }
     }
