@@ -3,148 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VibeGen Pro</title>
+    <title>VibeGen Pro | Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: #000; color: white; font-family: sans-serif; height: 100vh; overflow: hidden; }
-        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
-        .spotify-green { color: #1DB954; }
-        .btn-main { background: #1DB954; color: black; font-weight: 800; border-radius: 99px; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.9); }
-        /* Visualizer Bars */
+        body {
+            background: radial-gradient(circle at top left, #1db95422 0%, #121212 40%),
+                        radial-gradient(circle at bottom right, #191414 0%, #121212 100%);
+            color: white;
+            font-family: 'Circular', 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .spotify-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-spotify {
+            background-color: #1DB954;
+            color: black;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-spotify:active { transform: scale(0.9); }
+        .glass-input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid transparent;
+        }
+        .glass-input:focus {
+            background: rgba(255,255,255,0.1);
+            border-color: #1DB954;
+        }
         .bar { width: 4px; height: 20px; background: #1DB954; border-radius: 2px; animation: bounce 1s infinite alternate; }
-        @keyframes bounce { from { height: 5px; } to { height: 35px; } }
+        @keyframes bounce { from { height: 5px; } to { height: 25px; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="flex flex-col">
 
     <!-- Header -->
     <header class="p-6 flex justify-between items-center">
-        <div class="flex items-center gap-2 font-black italic tracking-tighter text-lg">
-            <i class="fa-brands fa-spotify text-2xl spotify-green"></i>
-            VIBEGEN <span class="spotify-green">PRO</span>
+        <div class="flex items-center gap-2">
+            <i class="fa-brands fa-spotify text-3xl text-[#1DB954]"></i>
+            <h1 class="text-xl font-bold tracking-tight">VibeGen <span class="font-light opacity-60">Pro</span></h1>
         </div>
         <div class="flex items-center gap-3">
-            <button onclick="togglePromo()" class="bg-yellow-500 text-black text-[10px] font-black px-4 py-1.5 rounded-full uppercase italic">Promote</button>
-            <div class="bg-white/10 px-4 py-1.5 rounded-full flex items-center gap-2 border border-white/10">
+            <div class="bg-black/40 px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
                 <i class="fa-solid fa-coins text-yellow-500 text-xs"></i>
-                <span id="coin-count" class="text-xs font-bold tracking-widest">--</span>
-                <!-- Ye button ab sirf message dikhayega, chori nahi karne dega -->
-                <button onclick="alert('Contact Admin to Refill Coins!')" class="ml-1 spotify-green font-bold text-lg">+</button>
+                <span id="coin-count" class="text-xs font-bold">--</span>
+                <!-- Admin Control Notice -->
+                <button onclick="alert('Contact Admin to Refill Coins!')" class="ml-1 text-[#1DB954] font-bold">+</button>
             </div>
+            <img src="https://ui-avatars.com/api/?name=User&background=1DB954&color=fff" class="w-8 h-8 rounded-full border-2 border-white/20">
         </div>
     </header>
 
-    <!-- Ad Space (Controlled by Admin) -->
-    <div class="px-6 mb-4">
-        <div class="glass p-3 rounded-2xl flex items-center gap-4 border-yellow-500/20">
-            <div class="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center text-black font-black text-xs">AD</div>
-            <div class="flex-1">
-                <p class="text-[8px] text-yellow-500 font-bold uppercase tracking-widest">Featured</p>
-                <h3 class="text-[11px] font-bold">Your Banner Here - Contact Admin</h3>
-            </div>
-            <i class="fa-solid fa-chevron-right opacity-20 text-xs"></i>
-        </div>
-    </div>
-
-    <!-- Main -->
-    <main class="flex-1 px-6 flex flex-col justify-center gap-8 max-w-md mx-auto w-full">
-        <div class="glass aspect-square rounded-[3rem] flex flex-col items-center justify-center relative shadow-2xl border-white/5">
-            <div class="flex items-end gap-1.5 h-20 mb-8">
+    <!-- Main Container -->
+    <main class="flex-1 px-6 flex flex-col justify-center gap-10 max-w-md mx-auto w-full">
+        
+        <!-- Album Art / Visualizer Area -->
+        <div class="spotify-card w-full aspect-square rounded-2xl shadow-2xl overflow-hidden relative flex items-center justify-center">
+            <div class="flex items-end gap-1 h-20">
                 <div class="bar" style="animation-delay: 0.1s"></div>
-                <div class="bar" style="animation-delay: 0.4s"></div>
-                <div class="bar" style="animation-delay: 0.2s"></div>
-                <div class="bar" style="animation-delay: 0.5s"></div>
                 <div class="bar" style="animation-delay: 0.3s"></div>
+                <div class="bar" style="animation-delay: 0.2s"></div>
+                <div class="bar" style="animation-delay: 0.4s"></div>
+                <div class="bar" style="animation-delay: 0.5s"></div>
             </div>
-            <div class="text-center px-4">
-                <p id="status" class="text-[9px] uppercase tracking-[0.4em] opacity-30 mb-2 font-bold">System Ready</p>
-                <h2 id="current-mood" class="text-xl font-bold italic tracking-tight uppercase">Ready to Sync?</h2>
+            <div class="absolute bottom-4 left-4">
+                <p class="text-[10px] uppercase tracking-widest opacity-50 font-bold">Now Analyzing</p>
+                <h2 id="current-mood" class="text-lg font-bold italic">Your Mood Vibe</h2>
             </div>
         </div>
 
-        <div class="relative">
-            <input id="vibe-input" type="text" placeholder="Mood: Dark Punjabi Lofi..." 
-                class="w-full bg-white/5 border border-white/10 py-5 px-8 rounded-full outline-none focus:border-[#1DB954] text-sm pr-16 italic">
-            <button id="vibe-btn" class="absolute right-2 top-2 w-12 h-12 btn-main flex items-center justify-center shadow-lg shadow-[#1DB954]/20">
-                <i class="fa-solid fa-play"></i>
-            </button>
+        <!-- Input Area -->
+        <div class="space-y-6">
+            <div class="relative group">
+                <input id="vibe-input" type="text" placeholder="What do you want to feel?" 
+                    class="glass-input w-full py-4 px-6 rounded-full outline-none text-sm transition-all text-white">
+                <button id="vibe-btn" class="absolute right-2 top-2 w-10 h-10 btn-spotify rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+            </div>
+
+            <!-- Quick Mood Pills -->
+            <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <button class="pill whitespace-nowrap px-4 py-2 rounded-full border border-white/10 text-xs bg-white/5">🔥 Gym</button>
+                <button class="pill whitespace-nowrap px-4 py-2 rounded-full border border-white/10 text-xs bg-white/5">🌙 Night</button>
+                <button class="pill whitespace-nowrap px-4 py-2 rounded-full border border-white/10 text-xs bg-white/5">☕ Chill</button>
+                <button class="pill whitespace-nowrap px-4 py-2 rounded-full border border-white/10 text-xs bg-white/5">💔 Sad</button>
+            </div>
         </div>
     </main>
 
-    <!-- Script Area -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <!-- Bottom Nav -->
+    <nav class="bg-black/80 backdrop-blur-md border-t border-white/5 p-4 flex justify-around items-center">
+        <div class="flex flex-col items-center gap-1 text-[#1DB954] cursor-pointer">
+            <i class="fa-solid fa-house"></i>
+            <span class="text-[10px]">Home</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 opacity-50 cursor-pointer" onclick="alert('Admin Panel Coming Soon')">
+            <i class="fa-solid fa-gear"></i>
+            <span class="text-[10px]">Manage</span>
+        </div>
+    </nav>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBlg80EyJqxsgCg2IWhKc8I57M4KgKijI",
-            authDomain: "vibegen-78d89.firebaseapp.com",
-            projectId: "vibegen-78d89",
-            storageBucket: "vibegen-78d89.firebasestorage.app",
-            messagingSenderId: "558487531782",
-            appId: "1:558487531782:web:98c1800201b2182bb32e87"
-        };
+   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        let userUID = localStorage.getItem('vibe_uid') || "user_" + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('vibe_uid', userUID);
+    const firebaseConfig = {
+        apiKey: "AIzaSyBlg80EyJqxsgCg2IWhKc8I57M4KgKijI",
+        authDomain: "vibegen-78d89.firebaseapp.com",
+        projectId: "vibegen-78d89",
+        storageBucket: "vibegen-78d89.firebasestorage.app",
+        messagingSenderId: "558487531782",
+        appId: "1:558487531782:web:98c1800201b2182bb32e87"
+    };
 
-        // --- ADMIN CONTROL: Real-time Coin Sync ---
-        // Jab tum Firebase Console mein number badloge, yahan bina refresh badal jayega
-        onSnapshot(doc(db, "users", userUID), (snapshot) => {
-            if (snapshot.exists()) {
-                document.getElementById('coin-count').innerText = snapshot.data().coins;
-            } else {
-                setDoc(doc(db, "users", userUID), { coins: 50 }); // Naye user ko 50 welcome coins
-            }
-        });
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyk8RtojcOPgwRhYHsjEPNVZHKX-_pKqrRzwI3fFHnSF-2AyCKUpMcZrmi4mQ2EwZ2deg/exec";
 
-        window.processVibe = async function() {
-            const input = document.getElementById('vibe-input');
-            const mood = input.value.trim();
-            if(!mood) return;
+    let userUID = localStorage.getItem('vibe_uid') || "user_" + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('vibe_uid', userUID);
 
-            const userRef = doc(db, "users", userUID);
-            const snap = await getDoc(userRef);
-            let coins = snap.data().coins;
+    // Sync Coins
+    onSnapshot(doc(db, "users", userUID), (snapshot) => {
+        if (snapshot.exists()) {
+            document.getElementById('coin-count').innerText = snapshot.data().coins;
+        } else {
+            setDoc(doc(db, "users", userUID), { coins: 50 });
+        }
+    });
 
-            if(coins <= 0) return alert("Coins khatam! Admin ko WhatsApp karein.");
+    window.processVibe = async function() {
+        const input = document.getElementById('vibe-input');
+        const mood = input.value.trim();
+        const status = document.getElementById('current-mood');
+        const btn = document.getElementById('vibe-btn');
 
-            document.getElementById('current-mood').innerText = "VIBING...";
-            
-            // Coin kaat lo (1 Search = 1 Coin)
+        if(!mood) return;
+
+        const userRef = doc(db, "users", userUID);
+        const snap = await getDoc(userRef);
+        let coins = snap.data().coins;
+
+        if(coins <= 0) return alert("No coins left! Contact Admin.");
+
+        // UI Changes
+        status.innerText = "TUNING VIBE...";
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+
+        try {
+            // 1. Coin Kaato Pehle (Database Update)
             await updateDoc(userRef, { coins: coins - 1 });
-            
-            // Redirect to Spotify
+
+            // 2. Google Script ko data bhejo (Background mein, wait nahi karenge)
+            fetch(GAS_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', // Ye error prevent karega
+                body: JSON.stringify({ mood, user: userUID }) 
+            });
+
+            // 3. Instant Redirect (Ab wait nahi hoga)
+            setTimeout(() => {
+                window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
+                // Reset UI after redirect
+                status.innerText = "READY TO SYNC?";
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            }, 800);
+
+        } catch(e) {
+            console.log("Error but continuing...");
             window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
         }
+    }
 
-        document.getElementById('vibe-btn').onclick = processVibe;
-    </script>
-</body>
-</html>            const input = document.getElementById('vibe-input');
-            const mood = input.value.trim();
-            if(!mood) return;
-
-            const userRef = doc(db, "users", userUID);
-            const snap = await getDoc(userRef);
-            let coins = snap.data().coins;
-
-            if(coins <= 0) return alert("Coins khatam! Admin ko WhatsApp karein.");
-
-            document.getElementById('current-mood').innerText = "VIBING...";
-            
-            // Coin kaat lo (1 Search = 1 Coin)
-            await updateDoc(userRef, { coins: coins - 1 });
-            
-            // Redirect to Spotify
-            window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
-        }
-
-        document.getElementById('vibe-btn').onclick = processVibe;
-    </script>
+    document.getElementById('vibe-btn').onclick = processVibe;
+</script>
 </body>
 </html>
