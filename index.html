@@ -2,83 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>VibeGen AI Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background: #121212;
-            background-image: radial-gradient(circle at 0% 0%, #1db95415 0%, transparent 50%);
             color: white;
-            font-family: 'Inter', sans-serif;
+            font-family: sans-serif;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Screen se bahar nahi jayega */
+            overflow: hidden;
         }
-        .spotify-card {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        .spotify-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .bar { width: 4px; height: 15px; background: #1DB954; border-radius: 2px; animation: bounce 1s infinite alternate; }
+        @keyframes bounce { from { height: 5px; } to { height: 25px; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
         .btn-spotify { background: #1DB954; color: black; font-weight: bold; }
-        .glass-input { background: rgba(255,255,255,0.08); border: 1px solid transparent; }
-        .glass-input:focus { border-color: #1DB954; background: rgba(255,255,255,0.12); }
         
-        .bar { width: 3px; height: 15px; background: #1DB954; border-radius: 1px; animation: bounce 1s infinite alternate; }
-        @keyframes bounce { from { height: 4px; } to { height: 20px; } }
-
-        /* Mobile Bottom Safe Area */
-        nav {
-            padding-bottom: env(safe-area-inset-bottom);
-            background: rgba(0,0,0,0.95);
-        }
+        /* Bottom Nav fix for mobile */
+        nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: rgba(0,0,0,0.9); padding-bottom: 10px; }
     </style>
 </head>
-<body class="safe-area">
+<body class="p-4">
 
     <!-- Header -->
-    <header class="p-4 flex justify-between items-center shrink-0">
+    <header class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-2">
-            <i class="fa-brands fa-spotify text-2xl text-[#1DB954]"></i>
-            <span class="font-bold tracking-tight">VibeGen <span class="opacity-50">AI</span></span>
+            <i class="fa-brands fa-spotify text-3xl text-[#1DB954]"></i>
+            <h1 class="text-xl font-bold">VibeGen <span class="opacity-50">AI</span></h1>
         </div>
-        <div class="flex items-center gap-2">
-            <div class="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[11px] font-bold">
-                <i class="fa-solid fa-coins text-yellow-500 mr-1"></i><span id="coin-count">--</span>
-            </div>
-            <div class="w-7 h-7 rounded-full bg-[#1DB954] text-black flex items-center justify-center text-[10px] font-bold">US</div>
+        <div class="bg-white/10 px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
+            <i class="fa-solid fa-coins text-yellow-500 text-xs"></i>
+            <span id="coin-count" class="text-xs font-bold">--</span>
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col px-6 gap-4 overflow-y-auto no-scrollbar pb-20">
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col gap-4 overflow-y-auto no-scrollbar pb-24">
         
-        <!-- Visualizer & Status -->
-        <div class="spotify-card w-full p-6 rounded-3xl flex flex-col items-center gap-3 shrink-0">
-            <div class="flex items-end gap-1 h-12">
+        <!-- Visualizer Box -->
+        <div class="spotify-card w-full p-8 rounded-3xl flex flex-col items-center justify-center gap-4">
+            <div class="flex items-end gap-1.5 h-12">
                 <div class="bar" style="animation-delay: 0.1s"></div>
                 <div class="bar" style="animation-delay: 0.3s"></div>
                 <div class="bar" style="animation-delay: 0.2s"></div>
                 <div class="bar" style="animation-delay: 0.4s"></div>
             </div>
             <div class="text-center">
-                <p id="ai-status" class="text-[9px] uppercase tracking-widest opacity-40 font-bold">System Ready</p>
-                <h2 id="current-mood" class="text-md font-bold italic">Enjoy your match!</h2>
+                <p id="ai-status" class="text-[10px] uppercase tracking-widest opacity-40">Neural Sync Active</p>
+                <h2 id="current-mood" class="text-lg font-bold italic">Vibe Matched!</h2>
             </div>
         </div>
 
-        <!-- NEW: Spotify Player Box (Niche wala) -->
-        <div id="player-box" class="hidden shrink-0">
-             <iframe id="spotify-iframe" src="" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" class="rounded-xl shadow-lg"></iframe>
+        <!-- SPOTIFY PLAYER (Ab ye hamesha dikhega jab search hoga) -->
+        <div id="player-container" class="hidden w-full">
+            <iframe id="spotify-iframe" src="" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" class="rounded-2xl"></iframe>
         </div>
 
-        <!-- Input Area -->
+        <!-- Input Section -->
         <div class="space-y-4">
             <div class="relative">
-                <input id="vibe-input" type="text" placeholder="E.g. Rain, long drive..." 
-                    class="glass-input w-full py-4 px-6 rounded-2xl outline-none text-sm text-white">
+                <input id="vibe-input" type="text" placeholder="Explain your vibe..." 
+                    class="w-full bg-white/5 py-4 px-6 rounded-2xl outline-none border border-white/10 focus:border-[#1DB954]">
                 <button id="vibe-btn" class="absolute right-2 top-2 w-10 h-10 btn-spotify rounded-xl flex items-center justify-center">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </button>
@@ -86,32 +74,31 @@
 
             <!-- Mood Pills -->
             <div class="flex gap-2 overflow-x-auto no-scrollbar">
-                <button onclick="quickAction('Gym 🔥')" class="pill whitespace-nowrap px-4 py-2 rounded-xl border border-white/10 text-xs bg-white/5">🔥 Gym</button>
-                <button onclick="quickAction('Night 🌙')" class="pill whitespace-nowrap px-4 py-2 rounded-xl border border-white/10 text-xs bg-white/5">🌙 Night</button>
-                <button onclick="quickAction('Chill ☕')" class="pill whitespace-nowrap px-4 py-2 rounded-xl border border-white/10 text-xs bg-white/5">☕ Chill</button>
-                <button onclick="quickAction('Sad 💔')" class="pill whitespace-nowrap px-4 py-2 rounded-xl border border-white/10 text-xs bg-white/5">💔 Sad</button>
+                <button onclick="quickVibe('🔥 Gym')" class="whitespace-nowrap px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs">🔥 Gym</button>
+                <button onclick="quickVibe('🌙 Night')" class="whitespace-nowrap px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs">🌙 Night</button>
+                <button onclick="quickVibe('☕ Chill')" class="whitespace-nowrap px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs">☕ Chill</button>
+                <button onclick="quickVibe('💔 Sad')" class="whitespace-nowrap px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs">💔 Sad</button>
             </div>
         </div>
     </main>
 
-    <!-- Fixed Bottom Nav -->
-    <nav class="fixed bottom-0 left-0 right-0 p-4 border-t border-white/5 flex justify-around items-center backdrop-blur-lg">
-        <div class="flex flex-col items-center gap-1 text-[#1DB954]">
-            <i class="fa-solid fa-house-chimney text-lg"></i>
-            <span class="text-[9px] font-bold">HOME</span>
+    <!-- Bottom Navigation -->
+    <nav class="flex justify-around items-center p-4 border-t border-white/5 backdrop-blur-xl">
+        <div class="flex flex-col items-center text-[#1DB954]">
+            <i class="fa-solid fa-house"></i>
+            <span class="text-[9px] mt-1">HOME</span>
         </div>
-        <div class="flex flex-col items-center gap-1 opacity-30">
-            <i class="fa-solid fa-compass text-lg"></i>
-            <span class="text-[9px] font-bold">EXPLORE</span>
+        <div class="flex flex-col items-center opacity-30">
+            <i class="fa-solid fa-bolt"></i>
+            <span class="text-[9px] mt-1">DISCOVER</span>
         </div>
-        <div class="flex flex-col items-center gap-1 opacity-30" onclick="alert('Coming Soon')">
-            <i class="fa-solid fa-user text-lg"></i>
-            <span class="text-[9px] font-bold">ME</span>
+        <div class="flex flex-col items-center opacity-30">
+            <i class="fa-solid fa-gear"></i>
+            <span class="text-[9px] mt-1">SETTINGS</span>
         </div>
     </nav>
 
 <script type="module">
-    // ... Firebase Config (Same as before) ...
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, onSnapshot, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -131,19 +118,16 @@
     let userUID = localStorage.getItem('vibe_uid') || "user_" + Math.random().toString(36).substr(2, 9);
     localStorage.setItem('vibe_uid', userUID);
 
-    onSnapshot(doc(db, "users", userUID), (snapshot) => {
-        if (snapshot.exists()) document.getElementById('coin-count').innerText = snapshot.data().coins;
+    onSnapshot(doc(db, "users", userUID), (s) => {
+        if(s.exists()) document.getElementById('coin-count').innerText = s.data().coins;
         else setDoc(doc(db, "users", userUID), { coins: 50 });
     });
 
-    window.quickAction = (t) => { document.getElementById('vibe-input').value = t; processVibe(); };
+    window.quickVibe = (t) => { document.getElementById('vibe-input').value = t; process(); };
 
-    window.processVibe = async function() {
-        const mood = document.getElementById('vibe-input').value.trim();
-        const status = document.getElementById('current-mood');
-        const playerBox = document.getElementById('player-box');
-        const iframe = document.getElementById('spotify-iframe');
-
+    async function process() {
+        const input = document.getElementById('vibe-input');
+        const mood = input.value.trim();
         if(!mood) return;
 
         const userRef = doc(db, "users", userUID);
@@ -151,23 +135,23 @@
         let coins = snap.data().coins;
         if(coins <= 0) return alert("No coins!");
 
-        status.innerText = "Analyzing...";
+        // 1. UI Update
+        document.getElementById('ai-status').innerText = "Processing DNA...";
+        document.getElementById('player-container').classList.remove('hidden');
+        document.getElementById('spotify-iframe').src = `https://open.spotify.com/embed/search/${encodeURIComponent(mood)}`;
+
+        // 2. Coin Cut
         await updateDoc(userRef, { coins: coins - 1 });
 
-        // 1. Show Player Niche hi
-        iframe.src = `https://open.spotify.com/embed/search/${encodeURIComponent(mood)}`;
-        playerBox.classList.remove('hidden');
-
-        // 2. Data to GAS
+        // 3. Data to Google Sheet
         fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ mood, user: userUID }) });
 
-        // 3. Open Spotify App after small delay
+        // 4. Redirect after brief look at player
         setTimeout(() => {
             window.location.href = `spotify:search:${encodeURIComponent(mood)}`;
-            status.innerText = "Synced!";
-        }, 1500);
+        }, 2000);
     }
-    document.getElementById('vibe-btn').onclick = processVibe;
+    document.getElementById('vibe-btn').onclick = process;
 </script>
 </body>
 </html>
