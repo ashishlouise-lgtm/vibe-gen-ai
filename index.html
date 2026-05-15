@@ -32,21 +32,16 @@
     <div id="loginArea" class="card">
         <h2 style="text-align: center; margin-bottom: 5px;">✨ AI Kundli Pro</h2>
         <p style="text-align:center; color:#888; font-size: 14px; margin-bottom: 20px;">Email ya Google se login karein</p>
-        
         <input type="email" id="authEmail" placeholder="Email Address">
-        <input type="password" id="authPassword" placeholder="Password (Min 6 digits)">
-        
+        <input type="password" id="authPassword" placeholder="Password">
         <button onclick="handleEmailAuth('login')">Log In</button>
         <button class="secondary-btn" onclick="handleEmailAuth('signup')">Naya Account Banayein</button>
-
         <div class="divider">OR</div>
-        
         <button onclick="loginWithGoogle()" style="background: #fff; color: #000;">Google se Continue karein</button>
     </div>
 
     <div id="mainApp" class="hidden">
         <div class="wallet">💰 Coins Balance: <span id="coinCount">0</span></div>
-
         <div class="card">
             <h3>Janam Vivaran</h3>
             <input type="text" id="name" placeholder="Pura Naam">
@@ -59,18 +54,15 @@
                 <div id="cityList"></div>
             </div>
             <input type="hidden" id="lat"> <input type="hidden" id="lon">
-            
             <button id="unlockBtn" onclick="generateKundli()">Unlock My Destiny (10 Coins)</button>
-
             <div id="loader">✨ Grah-Nakshatra ki ganna ho rahi hai...</div>
             <div id="report">
                 <b id="reportTitle" style="color: var(--gold); font-size: 18px;"></b>
-                <p id="reportTxt" style="font-size: 15px; color: #eee;"></p>
+                <p id="reportTxt" style="font-size: 15px; color: #eee; white-space: pre-wrap;"></p>
                 <button onclick="location.reload()" class="secondary-btn" style="font-size: 12px;">Nayi Kundli Dekhein</button>
             </div>
         </div>
-        
-        <button onclick="auth.signOut(); location.reload();" style="background: none; color: #555; font-size: 12px;">Log Out</button>
+        <button onclick="auth.signOut(); location.reload();" style="background: none; color: #555; font-size: 12px; width: 100%;">Log Out</button>
     </div>
 </div>
 
@@ -88,13 +80,10 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // --- NEW EMAIL AUTH LOGIC ---
     async function handleEmailAuth(type) {
         const email = document.getElementById('authEmail').value;
         const pass = document.getElementById('authPassword').value;
-
-        if(!email || !pass) { alert("Email aur Password bhariye"); return; }
-        
+        if(!email || !pass) { alert("Bhardo bhai!"); return; }
         try {
             if(type === 'signup') {
                 const res = await auth.createUserWithEmailAndPassword(email, pass);
@@ -103,14 +92,12 @@
                 const res = await auth.signInWithEmailAndPassword(email, pass);
                 handleUser(res.user);
             }
-        } catch (e) {
-            alert("Error: " + e.message);
-        }
+        } catch (e) { alert(e.message); }
     }
 
     function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).then(res => handleUser(res.user)).catch(e => alert(e.message));
+        auth.signInWithPopup(provider).then(res => handleUser(res.user));
     }
 
     auth.onAuthStateChanged(user => { if(user) handleUser(user); });
@@ -118,21 +105,12 @@
     async function handleUser(user) {
         document.getElementById('loginArea').classList.add('hidden');
         document.getElementById('mainApp').classList.remove('hidden');
-        
         const userRef = db.collection("users").doc(user.uid);
         const doc = await userRef.get();
-        
         if(!doc.exists) {
-            await userRef.set({ 
-                name: user.displayName || user.email.split('@')[0], 
-                coins: 10,
-                email: user.email 
-            }); 
+            await userRef.set({ name: user.displayName || "User", coins: 10 });
         }
-        
-        userRef.onSnapshot(snapshot => {
-            if(snapshot.exists) document.getElementById('coinCount').innerText = snapshot.data().coins || 0;
-        });
+        userRef.onSnapshot(s => { if(s.exists) document.getElementById('coinCount').innerText = s.data().coins; });
     }
 
     async function searchCity(q) {
@@ -160,43 +138,38 @@
         const dob = document.getElementById('dob').value;
         const tob = document.getElementById('tob').value;
 
-        if(!lat || !name || !dob || !tob) { alert("Pehle Janam Vivaran poora bhariye!"); return; }
+        if(!lat || !name) { alert("Details check karo!"); return; }
 
         const userRef = db.collection("users").doc(user.uid);
-        const userDoc = await userRef.get();
-        const currentCoins = userDoc.data().coins;
+        const doc = await userRef.get();
+        const coins = doc.data().coins;
 
-        if(currentCoins < 10) { alert("Kam se kam 10 coins chahiye!"); return; }
+        if(coins < 10) { alert("Coins kam hain!"); return; }
 
         document.getElementById('loader').style.display = 'block';
-        document.getElementById('report').style.display = 'none';
+        document.getElementById('unlockBtn').disabled = true;
 
         try {
             const response = await fetch('https://script.google.com/macros/s/AKfycbyk8RtojcOPgwRhYHsjEPNVZHKX-_pKqrRzwI3fFHnSF-2AyCKUpMcZrmi4mQ2EwZ2deg/exec', {
                 method: 'POST',
-    body: JSON.stringify({ name, lat, lon, datetime: dob+'T'+tob+':00Z' })
-    // mode: 'no-cors' KO HATA DO ya delete kar do
-});
-            
+                body: JSON.stringify({ name, lat, lon, datetime: dob+'T'+tob+':00Z' })
+            });
 
-const result = await response.json();
-document.getElementById('reportTxt').innerText = result.report; // Asli report yahan set hogi
-            
-            // Note: no-cors mein response nahi padh sakte, isliye hum isse handle karenge
-            // Asli app mein hum ek redirect ya cloud function use karte hain
-            // Par abhi ke liye main simulation aur coins deduct kar raha hoon
-            
-            setTimeout(async () => {
-                await userRef.update({ coins: currentCoins - 10 });
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('report').style.display = 'block';
+            const result = await response.json();
+
+            if(result.report) {
+                await userRef.update({ coins: coins - 10 });
+                document.getElementById('reportTxt').innerText = result.report;
                 document.getElementById('reportTitle').innerText = "Namaste " + name + " Ji,";
-                document.getElementById('reportTxt').innerText = "Aapki report taiyar hai. (Note: Apps Script se direct data aane mein CORS ki wajah se thodi dikkat ho sakti hai, agar report khali dikhe toh Apps Script mein permissions check karein).";
-            }, 3000);
-
+                document.getElementById('report').style.display = 'block';
+            } else {
+                alert("Error: " + (result.error || "Kuch gadbad hai"));
+            }
         } catch (e) {
-            alert("Error connecting to server!");
+            alert("Network Error! Apps Script check karein.");
+        } finally {
             document.getElementById('loader').style.display = 'none';
+            document.getElementById('unlockBtn').disabled = false;
         }
     }
 </script>
