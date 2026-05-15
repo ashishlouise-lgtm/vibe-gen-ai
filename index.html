@@ -174,9 +174,13 @@
         try {
             const response = await fetch('https://script.google.com/macros/s/AKfycbyk8RtojcOPgwRhYHsjEPNVZHKX-_pKqrRzwI3fFHnSF-2AyCKUpMcZrmi4mQ2EwZ2deg/exec', {
                 method: 'POST',
-                mode: 'no-cors', // Apps Script ke liye safe mode
-                body: JSON.stringify({ name, lat, lon, datetime: dob+'T'+tob+':00Z' })
-            });
+    body: JSON.stringify({ name, lat, lon, datetime: dob+'T'+tob+':00Z' })
+    // mode: 'no-cors' KO HATA DO ya delete kar do
+});
+            
+
+const result = await response.json();
+document.getElementById('reportTxt').innerText = result.report; // Asli report yahan set hogi
             
             // Note: no-cors mein response nahi padh sakte, isliye hum isse handle karenge
             // Asli app mein hum ek redirect ya cloud function use karte hain
